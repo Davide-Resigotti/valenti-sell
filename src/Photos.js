@@ -3,10 +3,12 @@ import './Contents.css';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaHome } from "react-icons/fa";
+import useMediaCache from './hooks/useMediaCache';
 
 function Photos() {
-
+    const { getCachedImage, isMediaLoaded } = useMediaCache();
     const [fullScreenImage, setFullScreenImage] = useState(null);
+    const [loadedImages, setLoadedImages] = useState(new Set());
 
     const handleImageClick = (src) => {
       setFullScreenImage(src);
@@ -14,6 +16,33 @@ function Photos() {
   
     const handleCloseFullScreen = () => {
       setFullScreenImage(null);
+    };
+
+    const handleImageLoad = (src) => {
+      setLoadedImages(prev => new Set([...prev, src]));
+    };
+
+    const ImageWithLoader = ({ src, alt, onClick }) => {
+      const isLoaded = loadedImages.has(src);
+      
+      return (
+        <div className="image-container">
+          {!isLoaded && (
+            <div className="image-placeholder">
+              <div className="spinner"></div>
+            </div>
+          )}
+          <img 
+            src={getCachedImage(src)} 
+            alt={alt} 
+            className={`rectangle ${isLoaded ? 'loaded' : 'loading'}`}
+            onClick={onClick} 
+            loading="lazy"
+            onLoad={() => handleImageLoad(src)}
+            style={{ display: isLoaded ? 'block' : 'none' }}
+          />
+        </div>
+      );
     };
   
 
@@ -31,11 +60,26 @@ function Photos() {
       <h2 >FOTO</h2>
     </div>
     <div className="projectRectangles">
-      <img src={`${process.env.PUBLIC_URL}/photos/IMG_4749-min.jpeg`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4749-min.jpeg`)} loading="lazy" />
-      <img src={`${process.env.PUBLIC_URL}/photos/IMG_4750-min.jpeg`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4750-min.jpeg`)} loading="lazy" />
-      <img src={`${process.env.PUBLIC_URL}/photos/IMG_4751-min.jpeg`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4751-min.jpeg`)} loading="lazy" />
-      <img src={`${process.env.PUBLIC_URL}/photos/IMG_4752-min.jpeg`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4752-min.jpeg`)} loading="lazy" />
-      <img src={`${process.env.PUBLIC_URL}/photos/IMG_4753-min.jpeg`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4753-min.jpeg`)} loading="lazy" />
+      <ImageWithLoader 
+        src={`${process.env.PUBLIC_URL}/photos/IMG_4749-min.jpeg`} 
+        onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4749-min.jpeg`)} 
+      />
+      <ImageWithLoader 
+        src={`${process.env.PUBLIC_URL}/photos/IMG_4750-min.jpeg`} 
+        onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4750-min.jpeg`)} 
+      />
+      <ImageWithLoader 
+        src={`${process.env.PUBLIC_URL}/photos/IMG_4751-min.jpeg`} 
+        onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4751-min.jpeg`)} 
+      />
+      <ImageWithLoader 
+        src={`${process.env.PUBLIC_URL}/photos/IMG_4752-min.jpeg`} 
+        onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4752-min.jpeg`)} 
+      />
+      <ImageWithLoader 
+        src={`${process.env.PUBLIC_URL}/photos/IMG_4753-min.jpeg`} 
+        onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4753-min.jpeg`)} 
+      />
       <img src={`${process.env.PUBLIC_URL}/photos/IMG_4754-min.jpeg`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4754-min.jpeg`)} loading="lazy" />
       <img src={`${process.env.PUBLIC_URL}/photos/IMG_4755-min.jpeg`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4755-min.jpeg`)} loading="lazy" />  
       <img src={`${process.env.PUBLIC_URL}/photos/IMG_4756-min.jpeg`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4756-min.jpeg`)} loading="lazy" />
@@ -79,7 +123,7 @@ function Photos() {
       <br />
     </div> */}
 
-    
+
     <br />
     </div>
     )

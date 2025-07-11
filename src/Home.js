@@ -2,14 +2,31 @@
 import './Home.css'; // Assicurati di avere il CSS per lo stile
 import './buttons.css';
 import { Link } from 'react-router-dom';
+import usePreloadMedia from './hooks/usePreloadMedia';
 
 
 const Home = () => {
+  const { isLoading, loadingProgress } = usePreloadMedia();
  
   return (
     
     <div className="home">
 
+      {/* Indicatore di caricamento */}
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="loading-container">
+            <h3>Caricamento contenuti...</h3>
+            <div className="progress-bar">
+              <div 
+                className="progress-fill" 
+                style={{ width: `${loadingProgress}%` }}
+              ></div>
+            </div>
+            <p>{Math.round(loadingProgress)}%</p>
+          </div>
+        </div>
+      )}
 
       <div className="first-page">
         <p className="text-1">
@@ -17,10 +34,10 @@ const Home = () => {
         </p>
         <div className="buttons">
         <Link to="/photos">
-            <button>FOTO</button>
+            <button disabled={isLoading}>FOTO</button>
           </Link>
           <Link to="/videos">
-            <button>VIDEO</button>
+            <button disabled={isLoading}>VIDEO</button>
           </Link>
           <Link to="/info">
             <button>INFO</button>

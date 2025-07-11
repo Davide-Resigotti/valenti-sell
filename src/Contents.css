@@ -136,4 +136,75 @@
       }
     
   }
-  
+
+/* Image loading styles */
+.image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.rectangle.loading {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.rectangle.loaded {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Video loading styles */
+.video-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+}
+
+.video-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  color: white;
+}
+
+.video-placeholder p {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}

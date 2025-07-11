@@ -25,6 +25,7 @@ function Info() {
             </div>
 
             <br />
+    
 
             <div className="pregi">
                 <h2 className='subtitles'>PREGI</h2>

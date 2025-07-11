@@ -5,15 +5,17 @@ import { FaHome } from "react-icons/fa";
 import useMediaCache from './hooks/useMediaCache';
 
 function Videos() {
-  const { getCachedVideo } = useMediaCache();
+  const { getCachedVideo, isVideoCached, markVideoAsLoaded } = useMediaCache();
   const [loadedVideos, setLoadedVideos] = useState(new Set());
 
   const handleVideoLoad = (src) => {
     setLoadedVideos(prev => new Set([...prev, src]));
+    markVideoAsLoaded(src);
   };
 
   const VideoWithLoader = ({ src, title }) => {
-    const isLoaded = loadedVideos.has(src);
+    const isCached = isVideoCached(src);
+    const isLoaded = loadedVideos.has(src) || isCached;
     
     return (
       <div className="video-container">
@@ -27,9 +29,12 @@ function Videos() {
           title={title}
           controls 
           className={`rectangle ${isLoaded ? 'loaded' : 'loading'}`}
-          onLoadedMetadata={() => handleVideoLoad(src)}
+          onCanPlayThrough={() => handleVideoLoad(src)}
+          onLoadedData={() => handleVideoLoad(src)}
           style={{ display: isLoaded ? 'block' : 'none' }}
-          preload="metadata"
+          preload={isCached ? "metadata" : "auto"}
+          playsInline
+          muted={false}
         >
           <source src={getCachedVideo(src)} type="video/mp4" />
           Your browser does not support the video tag.

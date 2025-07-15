@@ -73,24 +73,64 @@ function Photos() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Preload all images for instant display
+  // Preload images in sequence: photos first, then videos
   useEffect(() => {
-    const preloadImages = () => {
-      // Preload photos
-      photoImages.forEach(filename => {
-        const img = new Image();
-        img.src = `${process.env.PUBLIC_URL}/photos/${filename}`;
+    const preloadPhotosFirst = async () => {
+      // First, preload all photo images
+      const photoPromises = photoImages.map(filename => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = resolve; // Still resolve on error to continue
+          img.src = `${process.env.PUBLIC_URL}/photos/${filename}`;
+        });
       });
-      
-      // Preload parts
-      partImages.forEach(filename => {
-        const img = new Image();
-        img.src = `${process.env.PUBLIC_URL}/parts/${filename}`;
+
+      const partPromises = partImages.map(filename => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = resolve; // Still resolve on error to continue
+          img.src = `${process.env.PUBLIC_URL}/parts/${filename}`;
+        });
       });
+
+      try {
+        // Wait for all photos to load first
+        await Promise.all([...photoPromises, ...partPromises]);
+        
+        // After photos are loaded, start preloading video thumbnails
+        const videoThumbnails = [
+          'IMG_4784.webp', 'IMG_4785.webp', 'IMG_4786.webp', 
+          'IMG_4787.webp', 'IMG_4788.webp', 'IMG_4789.webp', 'IMG_4790.webp'
+        ];
+
+        videoThumbnails.forEach(filename => {
+          const img = new Image();
+          img.src = `${process.env.PUBLIC_URL}/thumbnails/${filename}`;
+        });
+
+        // Finally, start preloading actual videos (lowest priority)
+        setTimeout(() => {
+          const videoFiles = [
+            'IMG_4784.mp4', 'IMG_4785.mp4', 'IMG_4786.mp4',
+            'IMG_4787.mp4', 'IMG_4788.mp4', 'IMG_4789.mp4', 'IMG_4790.mp4'
+          ];
+
+          videoFiles.forEach(filename => {
+            const video = document.createElement('video');
+            video.preload = 'metadata';
+            video.src = `${process.env.PUBLIC_URL}/videos/${filename}`;
+          });
+        }, 1000); // Wait 1 second after photos before starting videos
+
+      } catch (error) {
+        console.log('Some images failed to preload, continuing anyway');
+      }
     };
 
     // Start preloading after a short delay to not block initial render
-    const timer = setTimeout(preloadImages, 100);
+    const timer = setTimeout(preloadPhotosFirst, 100);
     return () => clearTimeout(timer);
   }, [photoImages, partImages]);
   return (

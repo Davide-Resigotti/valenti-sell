@@ -94,9 +94,6 @@ function Photos() {
           console.log(`Failed to load photo ${photoImages[i]}, continuing...`);
           setLoadedPhotos(i + 1); // Still increment to continue loading
         }
-        
-        // Small delay between each image to prevent overwhelming the browser
-        await new Promise(resolve => setTimeout(resolve, 50));
       }
 
       // After all photos, load parts in order
@@ -115,9 +112,6 @@ function Photos() {
           console.log(`Failed to load part ${partImages[i]}, continuing...`);
           setLoadedParts(i + 1); // Still increment to continue loading
         }
-        
-        // Small delay between each image
-        await new Promise(resolve => setTimeout(resolve, 50));
       }
 
       // After all images, start video thumbnails

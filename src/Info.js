@@ -15,7 +15,7 @@ function Info() {
 
             <div className="descrizione">
                 <h1>
-                    Vendesi Valenti SM 50 Motard, anno 2018, immatricolata il.<br />
+                    Vendesi Valenti SM 50 Motard, anno 2018, immatricolata il 13/07/2018.<br />
                     Unico proprietario in quanto la moto è stata acquistata presso il concessionario ufficiale Suzuki Mazzola Moto (Bonate Sopra BG).<br />
                     Si tratta di una moto curata e tenuta con grande attenzione, pronta per essere guidata.
                 </h1>

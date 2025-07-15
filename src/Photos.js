@@ -134,6 +134,26 @@ function Photos() {
         <div 
           className="full-screen-overlay" 
           onClick={handleCloseFullScreen}
+          onTouchStart={(e) => {
+            const touch = e.touches[0];
+            e.currentTarget.touchStartX = touch.clientX;
+            e.currentTarget.touchStartY = touch.clientY;
+          }}
+          onTouchEnd={(e) => {
+            const touch = e.changedTouches[0];
+            const diffX = e.currentTarget.touchStartX - touch.clientX;
+            const diffY = e.currentTarget.touchStartY - touch.clientY;
+            
+            // Only swipe if horizontal movement is greater than vertical and significant
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+              e.preventDefault();
+              if (diffX > 0) {
+                handleNavigation('next');
+              } else {
+                handleNavigation('prev');
+              }
+            }
+          }}
         >
           <div className="full-screen-container">
             <button className="nav-btn nav-btn-left" onClick={(e) => {

@@ -2,9 +2,29 @@
 import './Home.css'; // Assicurati di avere il CSS per lo stile
 import './buttons.css';
 import { Link } from 'react-router-dom';
-
+import { useEffect } from 'react';
 
 const Home = () => {
+  
+  useEffect(() => {
+    // Preload first few critical images and video thumbnails when home loads
+    const criticalImages = [
+      '/photos/IMG_4749.webp',
+      '/photos/IMG_4750.webp', 
+      '/photos/IMG_4751.webp',
+      '/photos/IMG_4752.webp',
+      '/photos/IMG_4753.webp',
+      '/photos/IMG_4754.webp',
+      '/thumbnails/IMG_4784.webp',
+      '/thumbnails/IMG_4785.webp',
+      '/thumbnails/IMG_4786.webp'
+    ];
+
+    criticalImages.forEach(src => {
+      const img = new Image();
+      img.src = `${process.env.PUBLIC_URL}${src}`;
+    });
+  }, []);
  
   return (
     

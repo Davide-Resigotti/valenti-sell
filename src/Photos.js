@@ -28,12 +28,14 @@ function Photos() {
         <h2>FOTO</h2>
       </div>
       <div className="projectRectangles">
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4749.webp`} alt="" className="rectangle" loading="lazy" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4749.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4750.webp`} alt="" className="rectangle" loading="lazy" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4750.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4751.webp`} alt="" className="rectangle" loading="lazy" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4751.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4752.webp`} alt="" className="rectangle" loading="lazy" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4752.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4753.webp`} alt="" className="rectangle" loading="lazy" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4753.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4754.webp`} alt="" className="rectangle" loading="lazy" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4754.webp`)} />
+        {/* First 6 images - load immediately for faster initial view */}
+        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4749.webp`} alt="" className="rectangle" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4749.webp`)} />
+        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4750.webp`} alt="" className="rectangle" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4750.webp`)} />
+        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4751.webp`} alt="" className="rectangle" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4751.webp`)} />
+        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4752.webp`} alt="" className="rectangle" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4752.webp`)} />
+        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4753.webp`} alt="" className="rectangle" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4753.webp`)} />
+        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4754.webp`} alt="" className="rectangle" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4754.webp`)} />
+        {/* Rest with lazy loading */}
         <img src={`${process.env.PUBLIC_URL}/photos/IMG_4755.webp`} alt="" className="rectangle" loading="lazy" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4755.webp`)} />  
         <img src={`${process.env.PUBLIC_URL}/photos/IMG_4756.webp`} alt="" className="rectangle" loading="lazy" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4756.webp`)} />
         <img src={`${process.env.PUBLIC_URL}/photos/IMG_4759.webp`} alt="" className="rectangle" loading="lazy" decoding="async" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4759.webp`)} />

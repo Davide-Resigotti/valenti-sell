@@ -1,4 +1,3 @@
-
 import './Contents.css';
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
@@ -35,10 +34,20 @@ function Photos() {
     const index = allImages.indexOf(filename);
     setCurrentImageIndex(index);
     setFullScreenImage(src);
+    
+    // Prevent body scroll on mobile
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
   };
 
   const handleCloseFullScreen = () => {
     setFullScreenImage(null);
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
   };
 
   const handleNavigation = (direction) => {

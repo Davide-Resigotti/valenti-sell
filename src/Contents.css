@@ -194,37 +194,46 @@ html, body {
         max-width: 100%;
       }
 
-      .projectRectangles > img {
-        width: 100%;
-        margin: 1vh 0;
-      }
-    
-      .projectRectangles > video {
-        width: 100%;
-        margin: 1vh 0;
-      }
-
       /* Hide navigation buttons on mobile */
       .nav-btn {
         display: none;
       }
 
-      /* Remove background overlay on mobile for cleaner fullscreen */
+      /* Fix fullscreen on mobile */
       .full-screen-overlay {
-        background: black;
-      }
-
-      /* Make fullscreen image better for mobile */
-      .full-screen-image {
-        max-width: 100%;
-        max-height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100vw;
         height: 100vh;
-        object-fit: contain;
+        height: 100dvh; /* Dynamic viewport height for mobile browsers */
+        background: black;
+        z-index: 9999;
+        overflow: hidden;
+        touch-action: manipulation;
       }
 
       .full-screen-container {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
         overflow: hidden;
+      }
+
+      .full-screen-image {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height */
+        max-width: none;
+        max-height: none;
+        object-fit: contain;
+        user-select: none;
+        -webkit-user-select: none;
+        pointer-events: none;
       }
     
   }

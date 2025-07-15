@@ -1,6 +1,6 @@
 
 import './Contents.css';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { FaHome } from "react-icons/fa";
 
@@ -9,8 +9,6 @@ function Photos() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loadedPhotos, setLoadedPhotos] = useState(0);
   const [loadedParts, setLoadedParts] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [nextImage, setNextImage] = useState(null);
 
   // All images in order - memoized to prevent recreation on each render
   const allImages = useMemo(() => [
@@ -39,16 +37,11 @@ function Photos() {
     setFullScreenImage(src);
   };
 
-  const handleCloseFullScreen = useCallback(() => {
+  const handleCloseFullScreen = () => {
     setFullScreenImage(null);
-  }, []);
+  };
 
-  const handleSwipe = useCallback((direction) => {
-    if (isTransitioning) return; // Prevent rapid swipes
-    
-    setIsTransitioning(true);
-    
-    // Calculate next image
+  const handleNavigation = (direction) => {
     let newIndex;
     if (direction === 'next') {
       newIndex = (currentImageIndex + 1) % allImages.length;
@@ -60,50 +53,9 @@ function Photos() {
     const folder = isPartImage ? 'parts' : 'photos';
     const newSrc = `${process.env.PUBLIC_URL}/${folder}/${allImages[newIndex]}`;
     
-    // Set next image for dual-image transition
-    setNextImage({ src: newSrc, direction });
-    
-    // Start transition animations
-    const currentImageElement = document.querySelector('.full-screen-image.current');
-    const nextImageElement = document.querySelector('.full-screen-image.next');
-    
-    if (currentImageElement && nextImageElement) {
-      // Current image slides out
-      const currentSlideDirection = direction === 'next' ? '-100vw' : '100vw';
-      currentImageElement.style.transform = `translateX(${currentSlideDirection})`;
-      
-      // Next image slides in from opposite side
-      const nextSlideDirection = direction === 'next' ? '0' : '0';
-      nextImageElement.style.transform = `translateX(${nextSlideDirection})`;
-    }
-    
-    // Complete transition
-    setTimeout(() => {
-      setCurrentImageIndex(newIndex);
-      setFullScreenImage(newSrc);
-      setNextImage(null);
-      setIsTransitioning(false);
-    }, 400);
-  }, [currentImageIndex, allImages, isTransitioning]);
-
-  const handleKeyDown = useCallback((e) => {
-    if (fullScreenImage) {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        e.preventDefault();
-        handleSwipe('next');
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        handleSwipe('prev');
-      } else if (e.key === 'Escape') {
-        handleCloseFullScreen();
-      }
-    }
-  }, [fullScreenImage, handleSwipe, handleCloseFullScreen]);
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
+    setCurrentImageIndex(newIndex);
+    setFullScreenImage(newSrc);
+  };
 
   // Progressive loading: photos first, then videos
   useEffect(() => {
@@ -182,109 +134,25 @@ function Photos() {
         <div 
           className="full-screen-overlay" 
           onClick={handleCloseFullScreen}
-          onTouchStart={(e) => {
-            const touch = e.touches[0];
-            e.currentTarget.touchStartX = touch.clientX;
-            e.currentTarget.touchStartY = touch.clientY;
-          }}
-          onTouchEnd={(e) => {
-            const touch = e.changedTouches[0];
-            const diffX = e.currentTarget.touchStartX - touch.clientX;
-            const diffY = e.currentTarget.touchStartY - touch.clientY;
-            
-            // Only swipe if horizontal movement is greater than vertical
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-              e.preventDefault();
-              if (diffX > 0) {
-                handleSwipe('next');
-              } else {
-                handleSwipe('prev');
-              }
-            }
-          }}
         >
           <div className="full-screen-container">
-            <button className="swipe-btn swipe-btn-left" onClick={(e) => {
+            <button className="nav-btn nav-btn-left" onClick={(e) => {
               e.stopPropagation();
-              handleSwipe('prev');
+              handleNavigation('prev');
             }}>
               &#8249;
             </button>
             
-            {/* Current Image */}
             <img 
               src={fullScreenImage} 
               alt="Full Screen" 
-              className="full-screen-image current"
-              style={{
-                transform: 'translateX(0)',
-                opacity: 1,
-                transition: 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                position: 'absolute',
-                zIndex: 1
-              }}
+              className="full-screen-image"
               onClick={(e) => e.stopPropagation()}
-              onTouchStart={(e) => {
-                const touch = e.touches[0];
-                e.currentTarget.touchStartX = touch.clientX;
-                e.currentTarget.touchStartTime = Date.now();
-              }}
-              onTouchMove={(e) => {
-                if (!e.currentTarget.touchStartX || isTransitioning) return;
-                const touch = e.touches[0];
-                const diff = e.currentTarget.touchStartX - touch.clientX;
-                
-                // Visual feedback during swipe with horizontal translation (no opacity change)
-                if (Math.abs(diff) > 10) {
-                  const translateX = -diff * 0.8;
-                  e.currentTarget.style.transform = `translateX(${translateX}px)`;
-                  e.currentTarget.style.transition = 'none'; // Disable transition during drag
-                }
-              }}
-              onTouchEnd={(e) => {
-                if (isTransitioning) return;
-                const touch = e.changedTouches[0];
-                const diff = e.currentTarget.touchStartX - touch.clientX;
-                const timeDiff = Date.now() - e.currentTarget.touchStartTime;
-                
-                // Reset transition (no opacity transition)
-                e.currentTarget.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                
-                // Swipe detection with velocity consideration
-                if (Math.abs(diff) > 80 && timeDiff < 500) {
-                  e.preventDefault();
-                  if (diff > 0) {
-                    handleSwipe('next');
-                  } else {
-                    handleSwipe('prev');
-                  }
-                } else {
-                  // Reset to center if swipe wasn't strong enough (no opacity reset)
-                  e.currentTarget.style.transform = 'translateX(0)';
-                }
-              }}
             />
             
-            {/* Next Image (during transition) */}
-            {nextImage && (
-              <img 
-                src={nextImage.src} 
-                alt="" 
-                className="full-screen-image next"
-                style={{
-                  transform: `translateX(${nextImage.direction === 'next' ? '100vw' : '-100vw'})`,
-                  opacity: 1,
-                  transition: 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                  position: 'absolute',
-                  zIndex: 2
-                }}
-                onClick={(e) => e.stopPropagation()}
-              />
-            )}
-            
-            <button className="swipe-btn swipe-btn-right" onClick={(e) => {
+            <button className="nav-btn nav-btn-right" onClick={(e) => {
               e.stopPropagation();
-              handleSwipe('next');
+              handleNavigation('next');
             }}>
               &#8250;
             </button>

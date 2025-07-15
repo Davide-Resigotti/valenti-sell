@@ -114,7 +114,7 @@ html, body {
     object-fit: contain;
   }
 
-  .swipe-btn {
+  .nav-btn {
     position: absolute;
     top: calc(50% - 25px);
     background: transparent;
@@ -125,13 +125,14 @@ html, body {
     align-items: center;
     justify-content: center;
     z-index: 1001;
+    cursor: pointer;
   }
 
-  .swipe-btn-left {
+  .nav-btn-left {
     left: -20px;
   }
 
-  .swipe-btn-right {
+  .nav-btn-right {
     right: -20px;
   }
 
@@ -203,8 +204,8 @@ html, body {
         margin: 1vh 0;
       }
 
-      /* Hide swipe buttons on mobile since touch swipe is available */
-      .swipe-btn {
+      /* Hide navigation buttons on mobile */
+      .nav-btn {
         display: none;
       }
 
@@ -213,15 +214,13 @@ html, body {
         background: black;
       }
 
-      /* Make fullscreen image more swipe-friendly with transitions */
+      /* Make fullscreen image better for mobile */
       .full-screen-image {
         max-width: 100%;
         max-height: 100%;
         width: 100vw;
         height: 100vh;
         object-fit: contain;
-        touch-action: pan-x;
-        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       }
 
       .full-screen-container {

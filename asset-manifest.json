@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/valenti-sell/static/css/main.81c345ea.css",
-    "main.js": "/valenti-sell/static/js/main.4e8bcb94.js",
+    "main.css": "/valenti-sell/static/css/main.0ea39a5e.css",
+    "main.js": "/valenti-sell/static/js/main.b599165c.js",
     "static/js/453.4384509a.chunk.js": "/valenti-sell/static/js/453.4384509a.chunk.js",
     "index.html": "/valenti-sell/index.html",
-    "main.81c345ea.css.map": "/valenti-sell/static/css/main.81c345ea.css.map",
-    "main.4e8bcb94.js.map": "/valenti-sell/static/js/main.4e8bcb94.js.map",
+    "main.0ea39a5e.css.map": "/valenti-sell/static/css/main.0ea39a5e.css.map",
+    "main.b599165c.js.map": "/valenti-sell/static/js/main.b599165c.js.map",
     "453.4384509a.chunk.js.map": "/valenti-sell/static/js/453.4384509a.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.81c345ea.css",
-    "static/js/main.4e8bcb94.js"
+    "static/css/main.0ea39a5e.css",
+    "static/js/main.b599165c.js"
   ]
 }

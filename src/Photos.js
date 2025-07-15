@@ -7,6 +7,8 @@ import { FaHome } from "react-icons/fa";
 function Photos() {
   const [fullScreenImage, setFullScreenImage] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [loadedPhotos, setLoadedPhotos] = useState(0);
+  const [loadedParts, setLoadedParts] = useState(0);
 
   // All images in order - memoized to prevent recreation on each render
   const allImages = useMemo(() => [
@@ -73,33 +75,53 @@ function Photos() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Preload images in sequence: photos first, then videos
+  // Progressive loading: photos first, then videos
   useEffect(() => {
-    const preloadPhotosFirst = async () => {
-      // First, preload all photo images
-      const photoPromises = photoImages.map(filename => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.onload = resolve;
-          img.onerror = resolve; // Still resolve on error to continue
-          img.src = `${process.env.PUBLIC_URL}/photos/${filename}`;
-        });
-      });
-
-      const partPromises = partImages.map(filename => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.onload = resolve;
-          img.onerror = resolve; // Still resolve on error to continue
-          img.src = `${process.env.PUBLIC_URL}/parts/${filename}`;
-        });
-      });
-
-      try {
-        // Wait for all photos to load first
-        await Promise.all([...photoPromises, ...partPromises]);
+    const loadImagesSequentially = async () => {
+      // Load photos in order
+      for (let i = 0; i < photoImages.length; i++) {
+        try {
+          await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+              setLoadedPhotos(i + 1);
+              resolve();
+            };
+            img.onerror = reject;
+            img.src = `${process.env.PUBLIC_URL}/photos/${photoImages[i]}`;
+          });
+        } catch (error) {
+          console.log(`Failed to load photo ${photoImages[i]}, continuing...`);
+          setLoadedPhotos(i + 1); // Still increment to continue loading
+        }
         
-        // After photos are loaded, start preloading video thumbnails
+        // Small delay between each image to prevent overwhelming the browser
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      // After all photos, load parts in order
+      for (let i = 0; i < partImages.length; i++) {
+        try {
+          await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+              setLoadedParts(i + 1);
+              resolve();
+            };
+            img.onerror = reject;
+            img.src = `${process.env.PUBLIC_URL}/parts/${partImages[i]}`;
+          });
+        } catch (error) {
+          console.log(`Failed to load part ${partImages[i]}, continuing...`);
+          setLoadedParts(i + 1); // Still increment to continue loading
+        }
+        
+        // Small delay between each image
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      // After all images, start video thumbnails
+      setTimeout(() => {
         const videoThumbnails = [
           'IMG_4784.webp', 'IMG_4785.webp', 'IMG_4786.webp', 
           'IMG_4787.webp', 'IMG_4788.webp', 'IMG_4789.webp', 'IMG_4790.webp'
@@ -110,7 +132,7 @@ function Photos() {
           img.src = `${process.env.PUBLIC_URL}/thumbnails/${filename}`;
         });
 
-        // Finally, start preloading actual videos (lowest priority)
+        // Finally videos
         setTimeout(() => {
           const videoFiles = [
             'IMG_4784.mp4', 'IMG_4785.mp4', 'IMG_4786.mp4',
@@ -122,15 +144,12 @@ function Photos() {
             video.preload = 'metadata';
             video.src = `${process.env.PUBLIC_URL}/videos/${filename}`;
           });
-        }, 1000); // Wait 1 second after photos before starting videos
-
-      } catch (error) {
-        console.log('Some images failed to preload, continuing anyway');
-      }
+        }, 500);
+      }, 500);
     };
 
-    // Start preloading after a short delay to not block initial render
-    const timer = setTimeout(preloadPhotosFirst, 100);
+    // Start progressive loading after component mounts
+    const timer = setTimeout(loadImagesSequentially, 100);
     return () => clearTimeout(timer);
   }, [photoImages, partImages]);
   return (
@@ -181,41 +200,33 @@ function Photos() {
         <h2>FOTO</h2>
       </div>
       <div className="projectRectangles">
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4749.webp`} alt="" className="rectangle" loading="eager" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4749.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4750.webp`} alt="" className="rectangle" loading="eager" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4750.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4751.webp`} alt="" className="rectangle" loading="eager" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4751.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4752.webp`} alt="" className="rectangle" loading="eager" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4752.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4753.webp`} alt="" className="rectangle" loading="eager" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4753.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4754.webp`} alt="" className="rectangle" loading="eager" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4754.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4755.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4755.webp`)} />  
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4756.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4756.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4759.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4759.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4760.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4760.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4761.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4761.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4762.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4762.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4763.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4763.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4764.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4764.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4765.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4765.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4766.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4766.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4767.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4767.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4768.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4768.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4769.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4769.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4770.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4770.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4771.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4771.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4772.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4772.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4773.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4773.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4774.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4774.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4775.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4775.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4776.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4776.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4777.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4777.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4778.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4778.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4779.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4779.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4780.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4780.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4781.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4781.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4783.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4783.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4791.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4791.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4792.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4792.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/photos/IMG_4799.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/IMG_4799.webp`)} />
+        {photoImages.map((filename, index) => (
+          index < loadedPhotos ? (
+            <img 
+              key={index}
+              src={`${process.env.PUBLIC_URL}/photos/${filename}`} 
+              alt="" 
+              className="rectangle" 
+              loading="eager" 
+              onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/photos/${filename}`)} 
+            />
+          ) : (
+            <div 
+              key={index}
+              className="rectangle"
+              style={{
+                backgroundColor: '#f0f0f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#999',
+                fontSize: '12px'
+              }}
+            >
+              Loading...
+            </div>
+          )
+        ))}
       </div>
 
       <div className='parte'>
@@ -224,34 +235,32 @@ function Photos() {
       </div>
 
       <div className="projectRectangles">
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4793.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4793.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4794.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4794.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4795.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4795.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4796.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4796.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4797.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4797.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4798.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4798.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4800.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4800.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4801.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4801.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4803.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4803.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4806.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4806.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4807.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4807.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4808.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4808.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4809.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4809.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4810.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4810.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4811.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4811.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4812.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4812.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4813.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4813.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4814.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4814.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4815.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4815.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4816.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4816.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4817.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4817.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4818.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4818.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4819.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4819.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4820.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4820.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4821.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4821.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4822.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4822.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4823.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4823.webp`)} />
-        <img src={`${process.env.PUBLIC_URL}/parts/IMG_4824.webp`} alt="" className="rectangle" onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/IMG_4824.webp`)} />
+        {partImages.map((filename, index) => (
+          index < loadedParts ? (
+            <img 
+              key={index}
+              src={`${process.env.PUBLIC_URL}/parts/${filename}`} 
+              alt="" 
+              className="rectangle" 
+              onClick={() => handleImageClick(`${process.env.PUBLIC_URL}/parts/${filename}`)} 
+            />
+          ) : (
+            <div 
+              key={index}
+              className="rectangle"
+              style={{
+                backgroundColor: '#f0f0f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#999',
+                fontSize: '12px'
+              }}
+            >
+              Loading...
+            </div>
+          )
+        ))}
       </div>
       <br />
     </div>

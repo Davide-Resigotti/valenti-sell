@@ -9,6 +9,9 @@ function Photos() {
   const [loadedPhotos, setLoadedPhotos] = useState(0);
   const [loadedParts, setLoadedParts] = useState(0);
 
+  // Add state to store scroll position
+  const [scrollPosition, setScrollPosition] = useState(0);
+
   // All images in order - memoized to prevent recreation on each render
   const allImages = useMemo(() => [
     'IMG_4749.webp', 'IMG_4750.webp', 'IMG_4751.webp', 'IMG_4752.webp', 'IMG_4753.webp',
@@ -35,10 +38,14 @@ function Photos() {
     setCurrentImageIndex(index);
     setFullScreenImage(src);
     
+    // Store current scroll position
+    setScrollPosition(window.pageYOffset || document.documentElement.scrollTop);
+    
     // Prevent body scroll on mobile
     document.body.style.overflow = 'hidden';
     document.body.style.position = 'fixed';
     document.body.style.width = '100%';
+    document.body.style.top = `-${scrollPosition}px`;
   };
 
   const handleCloseFullScreen = () => {
@@ -48,6 +55,10 @@ function Photos() {
     document.body.style.overflow = '';
     document.body.style.position = '';
     document.body.style.width = '';
+    document.body.style.top = '';
+    
+    // Restore scroll position
+    window.scrollTo(0, scrollPosition);
   };
 
   const handleNavigation = (direction) => {

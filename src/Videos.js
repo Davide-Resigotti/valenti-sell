@@ -110,6 +110,54 @@ function Videos() {
           Your browser does not support the video tag.
         </video>
       </div>
+
+      <div className='parte'>
+        <h2>🔧🔧 MONTAGGIO MOTORE 🔧🔧</h2>
+      </div>
+
+      <div className="projectRectangles">
+        <video 
+          title="Montaggio motore - Parte 1" 
+          controls 
+          className="rectangle" 
+          preload="none"
+          loading="lazy"
+          muted
+          playsInline
+          poster={`${process.env.PUBLIC_URL}/engine-assembly-video-thumbs/IMG_4029.webp`}
+        >
+          <source src={`${process.env.PUBLIC_URL}/videos/IMG_4029.mp4`} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        <video 
+          title="Montaggio motore - Parte 2" 
+          controls 
+          className="rectangle" 
+          preload="none"
+          loading="lazy"
+          muted
+          playsInline
+          poster={`${process.env.PUBLIC_URL}/engine-assembly-video-thumbs/IMG_4037.webp`}
+        >
+          <source src={`${process.env.PUBLIC_URL}/videos/IMG_4037.mp4`} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        <video 
+          title="Montaggio motore - Parte 3" 
+          controls 
+          className="rectangle" 
+          preload="none"
+          loading="lazy"
+          muted
+          playsInline
+          poster={`${process.env.PUBLIC_URL}/engine-assembly-video-thumbs/IMG_4057.webp`}
+        >
+          <source src={`${process.env.PUBLIC_URL}/videos/IMG_4057.mp4`} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
       <br />
     </div>
   );

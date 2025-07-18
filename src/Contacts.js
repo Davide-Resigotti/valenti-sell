@@ -80,7 +80,7 @@ function Contacts() {
         <a href="https://www.subito.it/moto-e-scooter/suzuki-valenti-sm-50-2018-bergamo-609534409.htm?utm_medium=referral&utm_source=subito&utm_campaign=free-engagement-ad_detail" target="_blank" rel="noreferrer" >
           <img className='subito' src={process.env.PUBLIC_URL + '/subito.png'} alt=""  />
         </a>
-        <a href="https://www.moto.it/moto-usate/fantic-motor/motard-50/motard-50-m-casa-2t-2018/9525909#google_vignette" target="_blank" rel="noreferrer" >
+        <a href="https://www.moto.it/moto-usate/valenti/sm/sm-50-2015-18/9779066" target="_blank" rel="noreferrer" >
           <img className='subito' src={process.env.PUBLIC_URL + '/moto.jpg'} alt="" />
         </a>
       </div>

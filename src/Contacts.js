@@ -77,7 +77,7 @@ function Contacts() {
 
    
       <div className="siti">
-        <a href="https://www.subito.it/moto-e-scooter/suzuki-valenti-sm-50-2018-bergamo-609534409.htm?utm_medium=referral&utm_source=subito&utm_campaign=free-engagement-ad_detail" target="_blank" rel="noreferrer" >
+        <a href="https://www.subito.it/moto-e-scooter/suzuki-valenti-sm-50-2018-bergamo-613886349.htm?utm_medium=referral&utm_source=subito&utm_campaign=free-engagement-ad_detail" target="_blank" rel="noreferrer" >
           <img className='subito' src={process.env.PUBLIC_URL + '/subito.png'} alt=""  />
         </a>
         <a href="https://www.moto.it/moto-usate/valenti/sm/sm-50-2015-18/9779066" target="_blank" rel="noreferrer" >
